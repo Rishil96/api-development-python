@@ -2,10 +2,12 @@
 
 ## Table of Contents
 
-| Sr. No. |                         Topic |
-|:-------:|------------------------------:|
-|    1    | [Basic API Terminologies](#1) |
-|    2    |                 [FastAPI](#2) |
+| Sr. No. |               Topic                |
+|:-------:|:----------------------------------:|
+|    1    |   [Basic API Terminologies](#1)    |
+|    2    |           [FastAPI](#2)            |
+|    3    |           [Database](#3)           |
+|    4    |     [Python with Raw SQL](#4)      |
 
 ---
 
@@ -71,3 +73,53 @@
     - Delete resources using DELETE request.
 ---
 - FastAPI supports automatic documentation, by running the application and going to /docs URL we get auto-generated document for our API from Swagger UI.
+
+---
+
+<h2 id="3">Database</h2>
+
+- **Database** is a collection of organized data that can be easily accessed and managed.
+---
+- We don't work with Databases directly, instead we use a software called Database Management System (DBMS).
+---
+- **Primary Key** is a column or group of columns that uniquely identifies each record/row in a table. Each table can only have one and only one Primary Key.
+---
+- **Constraint** is a rule that we apply on columns. E.g. **UNIQUE** (each row in the that column has to be unique), **NOT NULL** (no row in that column can be NULL).
+---
+- **SQL (Structured Query Language)** is a query language used to interact with the database.
+  - `SELECT * FROM tableName`
+  - `SELECT col1, col2 FROM tableName`
+  - Select data from a table. Use * to select all columns or to select specific columns specify column names using comma.
+---
+  - `SELECT * FROM tableName WHERE Id = 1`
+  - `SELECT * FROM tableName WHERE Id = 2 AND Name = 'Rishil'`
+  - `SELECT * FROM tableName WHERE Id in (1, 2, 3)`
+  - Use where clause to filter data using conditions.
+  - AND can be used to merge 2 or more conditions.
+  - IN can be used to check a value in LIST of items.
+---
+  - `SELECT * FROM tableName WHERE Name LIKE '%ish%'`
+  - Use LIKE keyword to match based on patterns.
+  - % at the start means match anything followed by given letters and % at the end means match letters starting with given letters and followed by any letters.
+---
+  - `SELECT * FROM tableName ORDER BY Price ASC/DESC`
+  - `SELECT * FROM tableName ORDER BY Price ASC, Inventory DESC`
+  - Use ORDER BY ASC to sort in ascending order and DESC to sort in Descending order.
+  - It is possible to sort based on multiple columns by separating each column by commas.
+---
+  - `SELECT * FROM tableName LIMIT 10`
+  - `SELECT * FROM tableName LIMIT 10 OFFSET 2`
+  - Limit the number of records that we want to see using LIMIT keyword followed by the number of entries.
+  - Use offset to skip past the number of rows that we mention in OFFSET.
+---
+  - `INSERT INTO tableName (col1, col2, col3) VALUES (val1, val2, val3)`
+  - Insert a row in a table using the above syntax and mention the column names in the specific order that we provide our data in values.
+---
+  - `DELETE FROM tableName WHERE Id = 1`
+  - Delete rows based on conditions.
+---
+  - `UPDATE tableName SET Name = 'Rishil', Age=27 WHERE Id = 10`
+  - Update a row and pass values using SET keyword.
+
+
+<h2 id="4">Python with Raw SQL</h2>
