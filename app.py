@@ -1,5 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
+from fastapi import status, Response
 from schema import Post
 from database import get_db_connection
 
@@ -26,7 +28,7 @@ def get_all_posts():
 
 
 # Create a new post
-@app.post("/posts")
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):                                            # Get DB Connection
     conn = get_db_connection()                                          # Get cursor object
     cursor = conn.cursor()
@@ -37,6 +39,22 @@ def create_post(post: Post):                                            # Get DB
     cursor.close()                                                      # Close connection and cursor object
     conn.close()
     return {"data": new_post}
+
+
+# Update an existing post
+@app.put("/posts/{pid}")
+def update_post(pid: int, post: Post):
+    conn = get_db_connection()                                              # Create DB connection and cursor
+    cursor = conn.cursor()
+    cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""",
+                   (post.title, post.content, post.published, str(pid)))    # Build query using cursor
+    updated_post = cursor.fetchone()                                        # Fetch updated post
+    if not updated_post:                                                    # Raise exception if post not found
+        raise HTTPException(detail=f"Post with ID {pid} does not exist", status_code=status.HTTP_404_NOT_FOUND)
+    conn.commit()                                                           # Commit changes in database
+    cursor.close()                                                          # Close connection and cursor
+    conn.close()
+    return {"data": updated_post}
 
 
 if __name__ == "__main__":
