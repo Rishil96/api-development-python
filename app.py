@@ -16,19 +16,27 @@ def home():
 # Read all posts
 @app.get("/posts")
 def get_all_posts():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""SELECT * FROM posts""")
-    all_posts = cursor.fetchall()
-    cursor.close()
+    conn = get_db_connection()                      # Get DB Connection
+    cursor = conn.cursor()                          # Get cursor object
+    cursor.execute("""SELECT * FROM posts""")       # Build query to get all posts
+    all_posts = cursor.fetchall()                   # Fetch all posts using cursor query
+    cursor.close()                                  # Close cursor and connection object
     conn.close()
     return {"content": all_posts}
 
 
 # Create a new post
 @app.post("/posts")
-def create_post(post: Post):
-    return {"data": post.dict()}
+def create_post(post: Post):                                            # Get DB Connection
+    conn = get_db_connection()                                          # Get cursor object
+    cursor = conn.cursor()
+    cursor.execute("""INSERT into posts (title, content, published) VALUES (%s, %s, %s) RETURNING *""",
+                   (post.title, post.content, post.published))          # Build query to insert a post record in table
+    new_post = cursor.fetchone()
+    conn.commit()                                                       # Commit changes in database
+    cursor.close()                                                      # Close connection and cursor object
+    conn.close()
+    return {"data": new_post}
 
 
 if __name__ == "__main__":
