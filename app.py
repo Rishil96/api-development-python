@@ -71,5 +71,20 @@ def update_post(pid: int, post: Post):
     return {"data": updated_post}
 
 
+# Delete a post using ID
+@app.delete("/posts/{pid}")
+def delete_post(pid: int):
+    conn = get_db_connection()                                                      # Get DB Connection and cursor obj
+    cursor = conn.cursor()
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", str(pid))     # Build query to delete a post
+    deleted_post = cursor.fetchone()                                                # Fetch deleted post
+    if not deleted_post:                                                            # Raise exception if post not exists
+        raise HTTPException(detail=f"", status_code=status.HTTP_404_NOT_FOUND)
+    conn.commit()                                                                   # Commit changes to database
+    cursor.close()                                                                  # Close connection and cursor obj
+    conn.close()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 if __name__ == "__main__":
     uvicorn.run(app="app:app", host="127.0.0.1", port=5000, reload=True)
