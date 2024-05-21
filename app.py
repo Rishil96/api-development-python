@@ -41,6 +41,20 @@ def create_post(post: Post):                                            # Get DB
     return {"data": new_post}
 
 
+# Read a post with ID
+@app.get("/posts/{pid}")
+def get_post(pid: int):
+    conn = get_db_connection()                                              # Get connection and cursor object
+    cursor = conn.cursor()
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(pid)))     # Build query to select a post
+    post = cursor.fetchone()                                                # Fetch the post
+    if not post:                                                            # Raise exception if post not found
+        raise HTTPException(detail=f"Post with ID {pid} does not exist", status_code=status.HTTP_404_NOT_FOUND)
+    cursor.close()
+    conn.close()
+    return {"data": post}
+
+
 # Update an existing post
 @app.put("/posts/{pid}")
 def update_post(pid: int, post: Post):
