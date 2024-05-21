@@ -123,3 +123,7 @@
 
 
 <h2 id="4">Python with Raw SQL</h2>
+
+  - We can connect to postgresql server using psycopg2 library in Python.
+  - Create a connection by specifying the parameters necessary for DB Connection and use to connect method to get a connection.
+  - Use cursor.execute() method to build SQL Queries and follow up with commit, fetchall, fetchone to run the query.
