@@ -2,12 +2,13 @@
 
 ## Table of Contents
 
-| Sr. No. |               Topic                |
-|:-------:|:----------------------------------:|
-|    1    |   [Basic API Terminologies](#1)    |
-|    2    |           [FastAPI](#2)            |
-|    3    |           [Database](#3)           |
-|    4    |     [Python with Raw SQL](#4)      |
+| Sr. No. |                Topic                 |
+|:-------:|:------------------------------------:|
+|    1    |    [Basic API Terminologies](#1)     |
+|    2    |            [FastAPI](#2)             |
+|    3    |            [Database](#3)            |
+|    4    |      [Python with Raw SQL](#4)       |
+|    5    | [Object Relational Mapper (ORM)](#5) |
 
 ---
 
@@ -62,6 +63,7 @@
 
 <h2 id="2">FastAPI</h2>
 
+- Documentation Link: https://fastapi.tiangolo.com/tutorial/
 - In FastAPI, a route is created using a decorator function `@app.request_type("/url-path")`. Here app is the FastAPI object name, request_type is the type of request that route will handle and inside the () is the URL Path.
 ---
 - **Schema**: means a defined structure that must be followed to send/receive data via requests. Basically minimizing the errors a server has to handle as we regulate in what form we are receiving the data for specific endpoints.
@@ -128,3 +130,27 @@
   - Create a connection by specifying the parameters necessary for DB Connection and use to connect method to get a connection.
   - Use cursor.execute() method to build SQL Queries and follow up with commit, fetchall, fetchone to run the query.
   - Use FastAPIs status object return different status codes for different type of tasks.
+
+---
+
+<h2 id="5">Object Relational Mapper (ORM)</h2>
+
+- layer of abstraction between the database and us.
+- allows to perform database operations through traditional Python code (No SQL required).
+- SQLAlchemy is one of the most popular ORM libraries in Python.
+- It is a stand-alone library that can be used with different web frameworks or Python applications.
+- ORMs usually need the underlying driver to talk to the database such as psycopg2 in case of postgresql database.
+- **Below are the 3 steps to follow to get started with SQLAlchemy ORM for our application.** 
+---
+### Step 1: Database Connection Configuration
+
+1. Create a new python file **database.py** to keep all the DB connection code at one place.
+2. Create a connection string in the format `SQLALCHEMY_DATABASE_URL = "postgresql://<username>:<password>@<ip-address/hostname>/<database_name>"` where first we mention which DBMS are we using, then followed by username, password, host/IP address and database name.
+3. Create an engine which is responsible for SQLAlchemy to connect to the database `engine = create_engine(SQLALCHEMY_DATABASE_URL)`.
+4. We connect to the database using sessions so to create a session we use `SessionLocal = sessionmaker(autoflush=False, bind=engine)`.
+5. Now, the models that we will define to create the tables in database will extend a Base Class from SQLAlchemy `Base = declarative_base()`
+
+---
+
+
+---
