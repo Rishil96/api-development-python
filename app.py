@@ -37,15 +37,12 @@ def create_post(post: Post, db: Session = Depends(get_db)):
 
 # Read a post with ID
 @app.get("/posts/{pid}")
-def get_post(pid: int):
-    conn = get_db_connection()                                              # Get connection and cursor object
-    cursor = conn.cursor()
-    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(pid)))     # Build query to select a post
-    post = cursor.fetchone()                                                # Fetch the post
-    if not post:                                                            # Raise exception if post not found
-        raise HTTPException(detail=f"Post with ID {pid} does not exist", status_code=status.HTTP_404_NOT_FOUND)
-    cursor.close()
-    conn.close()
+def get_post(pid: int, db: Session = Depends(get_db)):
+    # Use filter to mimic WHERE clause in SQL and .first() to get the first match in table
+    post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
+    # Raise 404 if post is not found
+    if not post:
+        raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
     return {"data": post}
 
 
