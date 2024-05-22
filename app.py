@@ -64,16 +64,15 @@ def update_post(pid: int, post: Post):
 
 # Delete a post using ID
 @app.delete("/posts/{pid}")
-def delete_post(pid: int):
-    conn = get_db_connection()                                                      # Get DB Connection and cursor obj
-    cursor = conn.cursor()
-    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", str(pid))     # Build query to delete a post
-    deleted_post = cursor.fetchone()                                                # Fetch deleted post
-    if not deleted_post:                                                            # Raise exception if post not exists
-        raise HTTPException(detail=f"", status_code=status.HTTP_404_NOT_FOUND)
-    conn.commit()                                                                   # Commit changes to database
-    cursor.close()                                                                  # Close connection and cursor obj
-    conn.close()
+def delete_post(pid: int, db: Session = Depends(get_db)):
+    # Get post using query and filter
+    post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
+    # Raise 404 if post does not exist
+    if post is None:
+        raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
+    # Delete the post using db.delete and commit the changes
+    db.delete(post)
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
