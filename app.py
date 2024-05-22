@@ -48,17 +48,19 @@ def get_post(pid: int, db: Session = Depends(get_db)):
 
 # Update an existing post
 @app.put("/posts/{pid}")
-def update_post(pid: int, post: Post):
-    conn = get_db_connection()                                              # Create DB connection and cursor
-    cursor = conn.cursor()
-    cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *""",
-                   (post.title, post.content, post.published, str(pid)))    # Build query using cursor
-    updated_post = cursor.fetchone()                                        # Fetch updated post
-    if not updated_post:                                                    # Raise exception if post not found
-        raise HTTPException(detail=f"Post with ID {pid} does not exist", status_code=status.HTTP_404_NOT_FOUND)
-    conn.commit()                                                           # Commit changes in database
-    cursor.close()                                                          # Close connection and cursor
-    conn.close()
+def update_post(pid: int, post: Post, db: Session = Depends(get_db)):
+    # Build a query to get the post to update
+    post_query = db.query(models.BlogPost).filter(models.BlogPost.id == pid)
+    # Save the post in a variable by using first
+    post_to_update = post_query.first()
+    # Raise 404 if post does not exist
+    if post_to_update is None:
+        raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
+    # Update the post using the query variable and pass the below param along with the dictionary of values to update
+    post_query.update(post.dict(), synchronize_session=False)
+    # Commit the changes and grab the post back from database to return it using the query we built at the start
+    db.commit()
+    updated_post = post_query.first()
     return {"data": updated_post}
 
 
