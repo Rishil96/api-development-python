@@ -149,8 +149,26 @@
 3. Create an engine which is responsible for SQLAlchemy to connect to the database `engine = create_engine(SQLALCHEMY_DATABASE_URL)`.
 4. We connect to the database using sessions so to create a session we use `SessionLocal = sessionmaker(autoflush=False, bind=engine)`.
 5. Now, the models that we will define to create the tables in database will extend a Base Class from SQLAlchemy `Base = declarative_base()`
+6. Lastly, create a dependency function that we will use to create instances of session by passing it directly into FastAPI routes
+  ```
+  def get_db():
+      db = SessionLocal()
+      try:
+          yield db
+      finally:
+          db.close()
+  
+  ```
+---
+### Step 2: Create the models
+
+1. Create all the models that we would need by simply creating Python classes and extending Base class that we created during Step 1.
+2. Creating columns in our models is basically creating attributes in our Model classes by using helper classes provided by SQLAlchemy such as Column, Integer, String, Boolean, etc.
 
 ---
+### Step 3: Create tables in the database using the models
 
+1. Simply write one line of code in our main file which will create all the tables represented by our models if it doesn't already exist.
+`models.Base.metadata.create_all(bind=engine)`
 
 ---

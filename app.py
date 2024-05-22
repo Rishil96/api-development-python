@@ -3,7 +3,11 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi import status, Response
 from schema import Post
-from database import get_db_connection
+from database import get_db_connection, engine
+import models
+
+# Code that will create the tables in database represented by our models if they don't exist
+models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
