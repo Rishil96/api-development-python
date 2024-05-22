@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI, status, Response, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schema import Post
-from database import get_db_connection, engine, get_db
+from database import engine, get_db
 import models
 
 # Code that will create the tables in database represented by our models if they don't exist
@@ -22,7 +22,7 @@ def home():
 @app.get("/posts")
 def get_all_posts(db: Session = Depends(get_db)):
     all_posts = db.query(models.BlogPost).all()
-    return {"content": all_posts}
+    return all_posts
 
 
 # Create a new post
@@ -32,7 +32,7 @@ def create_post(post: Post, db: Session = Depends(get_db)):
     db.add(new_post)                                    # Add new BlogPost to database
     db.commit()                                         # Commit the changes
     db.refresh(new_post)                    # Refresh the new post to get details added at DB end (e.g. id, created_at)
-    return {"data": new_post}
+    return new_post
 
 
 # Read a post with ID
@@ -43,7 +43,7 @@ def get_post(pid: int, db: Session = Depends(get_db)):
     # Raise 404 if post is not found
     if not post:
         raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
-    return {"data": post}
+    return post
 
 
 # Update an existing post
@@ -61,7 +61,7 @@ def update_post(pid: int, post: Post, db: Session = Depends(get_db)):
     # Commit the changes and grab the post back from database to return it using the query we built at the start
     db.commit()
     updated_post = post_query.first()
-    return {"data": updated_post}
+    return updated_post
 
 
 # Delete a post using ID

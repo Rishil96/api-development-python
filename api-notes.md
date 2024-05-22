@@ -175,5 +175,6 @@
 ---
 - Important note: SQLAlchemy only creates a table if it does not exist, suppose we update an existing model which we would like to reflect in the database table, it won't work as SQLAlchemy will check if the __tablename__ of that model exists and if yes then it will not touch it even though it was modified in code.
 - We would normally initialize the tables with Alembic which we will learn later on.
-
+- **Schema/Pydantic Models** defines the structure of a request/response body. Helps us block the requests that causes errors in our server code.
+- **SQLAlchemy/ORM Model**: responsible for defining the table structure within the database and used to query the database using Python code.
 
