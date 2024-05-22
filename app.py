@@ -1,9 +1,8 @@
 import uvicorn
-from fastapi import FastAPI
-from fastapi.exceptions import HTTPException
-from fastapi import status, Response
+from fastapi import FastAPI, status, Response, Depends, HTTPException
+from sqlalchemy.orm import Session
 from schema import Post
-from database import get_db_connection, engine
+from database import get_db_connection, engine, get_db
 import models
 
 # Code that will create the tables in database represented by our models if they don't exist
@@ -88,6 +87,12 @@ def delete_post(pid: int):
     cursor.close()                                                                  # Close connection and cursor obj
     conn.close()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# Test DB Connection using SQLAlchemy
+@app.get("/sqlalchemy")
+def test_sql_db(db: Session = Depends(get_db)):
+    return {"status": "success"}
 
 
 if __name__ == "__main__":
