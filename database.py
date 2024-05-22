@@ -36,3 +36,13 @@ SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 # 4. All of our models that we define to create our tables in Postgres will extend this base class
 Base = declarative_base()
+
+
+# 5. Create a dependency function that we can pass directly into route function to connect to the database
+def get_db():
+    db = SessionLocal()
+    try:
+        # Using yield instead of return is basically to retain control in this function so db connection can be closed.
+        yield db
+    finally:
+        db.close()
