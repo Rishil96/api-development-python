@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, status, Response, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schema import Post
+from schema import Post, PostResponse
 from database import engine, get_db
 import models
 
@@ -26,7 +26,7 @@ def get_all_posts(db: Session = Depends(get_db)):
 
 
 # Create a new post
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
 def create_post(post: Post, db: Session = Depends(get_db)):
     new_post = models.BlogPost(**post.dict())           # Create a new BlogPost as per SQLAlchemy model schema
     db.add(new_post)                                    # Add new BlogPost to database
@@ -36,7 +36,7 @@ def create_post(post: Post, db: Session = Depends(get_db)):
 
 
 # Read a post with ID
-@app.get("/posts/{pid}")
+@app.get("/posts/{pid}", response_model=PostResponse)
 def get_post(pid: int, db: Session = Depends(get_db)):
     # Use filter to mimic WHERE clause in SQL and .first() to get the first match in table
     post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
@@ -47,7 +47,7 @@ def get_post(pid: int, db: Session = Depends(get_db)):
 
 
 # Update an existing post
-@app.put("/posts/{pid}")
+@app.put("/posts/{pid}", response_model=PostResponse)
 def update_post(pid: int, post: Post, db: Session = Depends(get_db)):
     # Build a query to get the post to update
     post_query = db.query(models.BlogPost).filter(models.BlogPost.id == pid)

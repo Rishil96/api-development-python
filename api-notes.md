@@ -177,4 +177,4 @@
 - We would normally initialize the tables with Alembic which we will learn later on.
 - **Schema/Pydantic Models** defines the structure of a request/response body. Helps us block the requests that causes errors in our server code.
 - **SQLAlchemy/ORM Model**: responsible for defining the table structure within the database and used to query the database using Python code.
-
+- It is also important to create a Pydantic model to send a standardized response back to the client/user.
