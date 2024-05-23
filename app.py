@@ -1,8 +1,8 @@
 import uvicorn
+import schema
 from fastapi import FastAPI, status, Response, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from schema import Post, PostResponse, UserCreate
 from database import engine, get_db
 import models
 
@@ -20,15 +20,15 @@ def home():
 
 
 # Read all posts
-@app.get("/posts", response_model=List[PostResponse])
+@app.get("/posts", response_model=List[schema.PostResponse])
 def get_all_posts(db: Session = Depends(get_db)):
     all_posts = db.query(models.BlogPost).all()
     return all_posts
 
 
 # Create a new post
-@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
-def create_post(post: Post, db: Session = Depends(get_db)):
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schema.PostResponse)
+def create_post(post: schema.Post, db: Session = Depends(get_db)):
     new_post = models.BlogPost(**post.dict())           # Create a new BlogPost as per SQLAlchemy model schema
     db.add(new_post)                                    # Add new BlogPost to database
     db.commit()                                         # Commit the changes
@@ -37,7 +37,7 @@ def create_post(post: Post, db: Session = Depends(get_db)):
 
 
 # Read a post with ID
-@app.get("/posts/{pid}", response_model=PostResponse)
+@app.get("/posts/{pid}", response_model=schema.PostResponse)
 def get_post(pid: int, db: Session = Depends(get_db)):
     # Use filter to mimic WHERE clause in SQL and .first() to get the first match in table
     post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
@@ -48,8 +48,8 @@ def get_post(pid: int, db: Session = Depends(get_db)):
 
 
 # Update an existing post
-@app.put("/posts/{pid}", response_model=PostResponse)
-def update_post(pid: int, post: Post, db: Session = Depends(get_db)):
+@app.put("/posts/{pid}", response_model=schema.PostResponse)
+def update_post(pid: int, post: schema.Post, db: Session = Depends(get_db)):
     # Build a query to get the post to update
     post_query = db.query(models.BlogPost).filter(models.BlogPost.id == pid)
     # Save the post in a variable by using first
@@ -80,8 +80,8 @@ def delete_post(pid: int, db: Session = Depends(get_db)):
 
 
 # Create a new user
-@app.post("/users", status_code=status.HTTP_201_CREATED)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schema.UserResponse)
+def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(**user.dict())           # Create user by passing dict of pydantic model into SQLAlchemy User
     db.add(new_user)                                # Add new user into the database
     db.commit()                                     # Commit changes into the database
