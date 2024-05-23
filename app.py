@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI, status, Response, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from schema import Post, PostResponse
+from schema import Post, PostResponse, UserCreate
 from database import engine, get_db
 import models
 
@@ -79,11 +79,14 @@ def delete_post(pid: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-# Test DB Connection using SQLAlchemy
-@app.get("/sqlalchemy")
-def test_sql_db(db: Session = Depends(get_db)):
-    all_posts = db.query(models.BlogPost).all()
-    return {"data": all_posts}
+# Create a new user
+@app.post("/users", status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    new_user = models.User(**user.dict())           # Create user by passing dict of pydantic model into SQLAlchemy User
+    db.add(new_user)                                # Add new user into the database
+    db.commit()                                     # Commit changes into the database
+    db.refresh(new_user)                            # Refresh the new user with database details like created_at, id.
+    return new_user
 
 
 if __name__ == "__main__":
