@@ -9,6 +9,7 @@
 |    3    |            [Database](#3)            |
 |    4    |      [Python with Raw SQL](#4)       |
 |    5    | [Object Relational Mapper (ORM)](#5) |
+|    5    |     [Users & Authentication](#6)     |
 
 ---
 
@@ -179,3 +180,11 @@
 - **SQLAlchemy/ORM Model**: responsible for defining the table structure within the database and used to query the database using Python code.
 - It is also important to create a Pydantic model to send a standardized response back to the client/user.
 - To send a response of list of posts which is a list of Pydantic model instances we can use List from typing.
+
+---
+
+<h2 id="6">Users & Authentication</h2>
+
+- it is important to use hash functions before storing the user password into the database for security purposes.
+- APIRouters: is a way to create multiple modules for FastAPI where routers of different kinds can exist within their own modules such as posts and users can exist in separate module but still be part of the same app.
+- 
