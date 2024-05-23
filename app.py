@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, status, Response, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from schema import Post, PostResponse
 from database import engine, get_db
 import models
@@ -19,7 +20,7 @@ def home():
 
 
 # Read all posts
-@app.get("/posts")
+@app.get("/posts", response_model=List[PostResponse])
 def get_all_posts(db: Session = Depends(get_db)):
     all_posts = db.query(models.BlogPost).all()
     return all_posts
