@@ -93,5 +93,15 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
+# Get user with id
+@app.get("/users/{uid}", response_model=schema.UserResponse)
+def get_user(uid: int, db: Session = Depends(get_db)):
+    print("Getting user with id:", uid)
+    user_get = db.query(models.User).filter(models.User.id == uid).first()
+    if user_get is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {uid} does not exist")
+    return user_get
+
+
 if __name__ == "__main__":
     uvicorn.run(app="app:app", host="127.0.0.1", port=5000, reload=True)
