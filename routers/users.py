@@ -6,11 +6,11 @@ import utils
 from database import get_db
 
 
-router = APIRouter()
+router = APIRouter(prefix="/users")
 
 
 # Create a new user
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=schema.UserResponse)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.UserResponse)
 def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
     # Hash the user password before storing it in database
     hashed_password = utils.hash_password(user.password)
@@ -23,7 +23,7 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
 
 # Get user with id
-@router.get("/users/{uid}", response_model=schema.UserResponse)
+@router.get("/{uid}", response_model=schema.UserResponse)
 def get_user(uid: int, db: Session = Depends(get_db)):
     print("Getting user with id:", uid)
     user_get = db.query(models.User).filter(models.User.id == uid).first()

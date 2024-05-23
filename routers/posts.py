@@ -6,18 +6,18 @@ from database import get_db
 from typing import List
 
 
-router = APIRouter()
+router = APIRouter(prefix="/posts")
 
 
 # Read all posts
-@router.get("/posts", response_model=List[schema.PostResponse])
+@router.get("/", response_model=List[schema.PostResponse])
 def get_all_posts(db: Session = Depends(get_db)):
     all_posts = db.query(models.BlogPost).all()
     return all_posts
 
 
 # Create a new post
-@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schema.PostResponse)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.PostResponse)
 def create_post(post: schema.Post, db: Session = Depends(get_db)):
     new_post = models.BlogPost(**post.dict())           # Create a new BlogPost as per SQLAlchemy model schema
     db.add(new_post)                                    # Add new BlogPost to database
@@ -27,7 +27,7 @@ def create_post(post: schema.Post, db: Session = Depends(get_db)):
 
 
 # Read a post with ID
-@router.get("/posts/{pid}", response_model=schema.PostResponse)
+@router.get("/{pid}", response_model=schema.PostResponse)
 def get_post(pid: int, db: Session = Depends(get_db)):
     # Use filter to mimic WHERE clause in SQL and .first() to get the first match in table
     post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
@@ -38,7 +38,7 @@ def get_post(pid: int, db: Session = Depends(get_db)):
 
 
 # Update an existing post
-@router.put("/posts/{pid}", response_model=schema.PostResponse)
+@router.put("/{pid}", response_model=schema.PostResponse)
 def update_post(pid: int, post: schema.Post, db: Session = Depends(get_db)):
     # Build a query to get the post to update
     post_query = db.query(models.BlogPost).filter(models.BlogPost.id == pid)
@@ -56,7 +56,7 @@ def update_post(pid: int, post: schema.Post, db: Session = Depends(get_db)):
 
 
 # Delete a post using ID
-@router.delete("/posts/{pid}")
+@router.delete("/{pid}")
 def delete_post(pid: int, db: Session = Depends(get_db)):
     # Get post using query and filter
     post = db.query(models.BlogPost).filter(models.BlogPost.id == pid).first()
