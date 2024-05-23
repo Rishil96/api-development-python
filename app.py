@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from database import engine, get_db
 import models
+import utils
 
 # Code that will create the tables in database represented by our models if they don't exist
 models.Base.metadata.create_all(bind=engine)
@@ -82,6 +83,9 @@ def delete_post(pid: int, db: Session = Depends(get_db)):
 # Create a new user
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schema.UserResponse)
 def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
+    # Hash the user password before storing it in database
+    hashed_password = utils.hash_password(user.password)
+    user.password = hashed_password
     new_user = models.User(**user.dict())           # Create user by passing dict of pydantic model into SQLAlchemy User
     db.add(new_user)                                # Add new user into the database
     db.commit()                                     # Commit changes into the database
