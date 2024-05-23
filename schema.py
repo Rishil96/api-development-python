@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 
@@ -19,3 +19,9 @@ class PostResponse(BaseModel):
     # Create config class in Pydantic Model to ensure smooth conversion into dictionary between pydantic and sqlalchemy
     class Config:
         orm_mode = True
+
+
+# Create a user
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
