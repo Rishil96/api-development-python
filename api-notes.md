@@ -187,4 +187,23 @@
 
 - it is important to use hash functions before storing the user password into the database for security purposes.
 - APIRouters: is a way to create multiple modules for FastAPI where routers of different kinds can exist within their own modules such as posts and users can exist in separate module but still be part of the same app.
-- 
+- To separate out the endpoints as per our routers in our documentation, simply pass the tag as tags = ["tag_name"] inside our router object. This will give separate headings for each tag and all the respective URLs will be under that heading.
+- Also we can use a prefix for each router to avoid repeating the common path inside our specific routers.
+
+---
+
+- Authentication is an important part of API where not everyone should be allowed to do everything in an API.
+- There are 2 main ways to tackle authentication:-
+  - **Session based authentication**: storing some piece of information in our backend that tells us that the user is logged in.
+  - **JWT Token based authentication (JSON Web Token)**: stateless authentication where nothing needs to be stored in our backend. The front end keeps track whether the user is logged in or not.
+      1. User types email and password in path operation (/login).
+      2. If credentials are valid sign JWT Token and send response back with a token.
+      3. Now since the client has token, he is logged in till the token is valid, every operation that requires user to be logged in will have this token sent in the header of the request.
+      4. For any operation, if a request is sent and the token is valid, the response will be sent.
+- JWT Token is made up of three elements:-
+      1. Header containing the metadata about the token.
+      2. Payload is up to us whatever we want to send we can send in the payload. Common things included are user id, username, user roles, etc.
+      3. Signature contains the header, payload and a secret that is only kept in our API.
+- These 3 elements are passed onto the signing algorithm which will return a signature and this signature will be checked if its valid or not.
+
+---
