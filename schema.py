@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
 
 
 # Create a schema for receiving post data from request
@@ -41,3 +42,14 @@ class UserResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+# Token Schema
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+# Token Data
+class TokenData(BaseModel):
+    id: Optional[str] = None

@@ -208,4 +208,26 @@
 - We will use python-jose[cryptography] library to implement this process, we need 3 things:- SECRET KEY, Algorithm and Expiration time of the token.
 - Use jwt that can be imported from jose and use jwt.encode(), and provide payload/header, Secret key and the algorithm to be used. This will generate a JWT Token for us.
 - JWT Tokens can be decoded for the most part except for the signature which is why it is safe to use it for authentication.
+- `openssl rand -hex 32` use this command to generate a random 32-bit secret key.
+- Separating the authentication code writing into steps below:-
+---
+## Step 1: Create a router that handles authentication i.e. /login route
+- this route will accept username/email and password as form data from the user.
+- Create an APIRouter to handle this if required, this route will have 2 dependencies
+  1. Database dependency :- `db: Session = Depends(get_db)`
+  2. OAuth2PasswordRequestForm dependency :- `user_credential: OAuth2PasswordRequestForm = Depends()`
+- First one we know, second one expects username and password from the user attempting to log in using the /login route.
+- This can be accessed using the variable like user_credential.username and user_credential.password for authenticating further.
+- Now, three things should happen in this route.
+  1. Fetch user from db using username/email, if not found then raise 403 Exception.
+  2. If found, verify password by hashing the user given password with hashed password in db if not matched then raise 403 Exception.
+  3. If matched, call the function to create JWT access token which will be created in further steps and return the token from the route.
+---
+## Step 2: Create pydantic base models to create a schema for JWT Tokens
+- this will be a class (Token) having 2 attributes :- access_token : str, token_type : str
+- Token class pydantic model will be used by path operations to check if the token used to perform operations such as creating, deleting posts are valid structure or not.
+- create another class (TokenData) having a single attribute :- uid : int which will be used later.
+---
+## Step 3: Write logic handling creation, verification and getting current active user
+- 
 ---
