@@ -205,5 +205,7 @@
       2. Payload is up to us whatever we want to send we can send in the payload. Common things included are user id, username, user roles, etc.
       3. Signature contains the header, payload and a secret that is only kept in our API.
 - These 3 elements are passed onto the signing algorithm which will return a signature and this signature will be checked if its valid or not.
-
+- We will use python-jose[cryptography] library to implement this process, we need 3 things:- SECRET KEY, Algorithm and Expiration time of the token.
+- Use jwt that can be imported from jose and use jwt.encode(), and provide payload/header, Secret key and the algorithm to be used. This will generate a JWT Token for us.
+- JWT Tokens can be decoded for the most part except for the signature which is why it is safe to use it for authentication.
 ---
