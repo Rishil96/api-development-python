@@ -78,6 +78,12 @@
 - FastAPI supports automatic documentation, by running the application and going to /docs URL we get auto-generated document for our API from Swagger UI.
 
 ---
+- Important Concept : Dependency in FastAPI => Depends()
+- In FastAPI dependency is a way to inject reusable pieces of code into your endpoints, routes, or path operations.
+- It can be like connecting to database, authentication, validation, etc.
+- To simply understand how it works, when a user hits a request on an endpoint with Depends() function, that function will be executed and the return value of that dependency function can be used in the route/endpoint.
+
+---
 
 <h2 id="3">Database</h2>
 
@@ -209,25 +215,70 @@
 - Use jwt that can be imported from jose and use jwt.encode(), and provide payload/header, Secret key and the algorithm to be used. This will generate a JWT Token for us.
 - JWT Tokens can be decoded for the most part except for the signature which is why it is safe to use it for authentication.
 - `openssl rand -hex 32` use this command to generate a random 32-bit secret key.
-- Separating the authentication code writing into steps below:-
+- **Separating the authentication code writing into steps below:-**
+---
+## Step 0: Write logic to store passwords as hash values in database
+- Install passlib and bcrypt libraries and create a new .py file called utils.py to keep logic to hash user passwords.
+- from passlib.context import CryptContext and create an instance of it using `pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")`
+- this pwd_context will have the method .hash in which we can pass plain text and get hash value in return which can be stored in database.
+- similarly, pwd_context also has a method .verify which accepts a plain text and a hash value as inputs and returns a boolean as True if the plain text after being hashed is same as the hash value given in input. Basically to check if given plain text password is correct or not.
+- Use these simple steps to increase security by not storing passwords as raw strings.
 ---
 ## Step 1: Create a router that handles authentication i.e. /login route
 - this route will accept username/email and password as form data from the user.
-- Create an APIRouter to handle this if required, this route will have 2 dependencies
+- Create an APIRouter to handle this if required. 
+- This route will have 2 dependencies
   1. Database dependency :- `db: Session = Depends(get_db)`
   2. OAuth2PasswordRequestForm dependency :- `user_credential: OAuth2PasswordRequestForm = Depends()`
-- First one we know, second one expects username and password from the user attempting to log in using the /login route.
+- First one we know, second one expects username and password from the user attempting to log in using the /login route as form data.
 - This can be accessed using the variable like user_credential.username and user_credential.password for authenticating further.
 - Now, three things should happen in this route.
   1. Fetch user from db using username/email, if not found then raise 403 Exception.
   2. If found, verify password by hashing the user given password with hashed password in db if not matched then raise 403 Exception.
   3. If matched, call the function to create JWT access token which will be created in further steps and return the token from the route.
+
 ---
+
 ## Step 2: Create pydantic base models to create a schema for JWT Tokens
 - this will be a class (Token) having 2 attributes :- access_token : str, token_type : str
 - Token class pydantic model will be used by path operations to check if the token used to perform operations such as creating, deleting posts are valid structure or not.
-- create another class (TokenData) having a single attribute :- uid : int which will be used later.
+- create another pydantic model class (TokenData) having a single attribute :- uid : int which will be used later.
+
 ---
-## Step 3: Write logic handling creation, verification and getting current active user
+
+## Step 3: Create module oauth2.py for JWT codes.
+- Create a new module named oauth2.py which will be used to store all JWT related code.
+- create an Oauth2 scheme by importing `from fastapi.security import OAuth2PasswordBearer`
+- `oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")` login is the route path where we will handle the logging in of users.
+- Create 3 global variables:-
+    1. SECRET_KEY = "any-random-string-preferably-large" => needed in JWT Token Creation.
+    2. ALGORITHM = "HS2256" => the algorithm used to create JWT Token.
+    3. ACCESS_TOKEN_EXPIRE_MINUTES = 30 => expiration time of the token.
+
+---
+
+## Step 4: Create function for JWT Token Creation in oauth2.py
+
+- Write function to create a token which takes one input i.e. data in dictionary format. 
+- This data is the header/payload that we wish to use in generation of JWT Token. We can send stuff like name, id, role, expiration time, etc.
+- In this function first create a copy of data to not change the real data.
+- Second, create a timedelta using `expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)` and add this to our data copy (header/payload).
+- generate the jwt token using `jwt.encode(claims=data_copy, key=SECRET_KEY, algorithm=[ALGORITHM])` and return the token.
+- jwt can be imported by installing python-jose and then `from jose import jwt, JWTError`.
+- With this our create token function is ready.
+
+---
+
+## Step 5: Create function to verify JWT Token
+
+- Create a function that verifies if the access token is a valid one or not.
+- this function accepts 2 inputs :- token and credential_exception, token is the one we want to verify and credential_exception is the Exception we raise if verification fails.
+- First we extract the payload from the JWT Token received in input by using jwt.decode. `payload = jwt.decode(token=token, key=SECRET_KEY, algorithms=ALGORITHM)`.
+- Now we check the payload by saving the data in a variable and passing it in our Pydantic model TokenData.
+- If the data received in the payload is None or not a valid TokenData that we use, we raise credential_exception or else we return the token_data pydantic model.
+
+---
+
+## Step 6: Create function to get current user logged in
+
 - 
----
