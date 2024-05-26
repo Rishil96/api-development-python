@@ -281,4 +281,10 @@
 
 ## Step 6: Create function to get current user logged in
 
-- 
+- this function get current user will take the token as input which is a string that depends on OAuth2PasswordBearer instance.
+- Inside this function we simply create the exception that we want to return if the JWT authentication results in failure.
+- Then we check the output of verify JWT Token function created in step 5 and pass the exception that we created here.
+- this function will be used as a dependency in our FastAPI Routes to check if the user is logged in and authenticated.
+- this function will return the current user that whose ID was extracted from the token header and that ID was used to get the user from the database.
+
+---
