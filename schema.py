@@ -52,4 +52,4 @@ class Token(BaseModel):
 
 # Token Data
 class TokenData(BaseModel):
-    id: Optional[str] = None
+    id: Optional[int] = None
