@@ -49,9 +49,15 @@ def update_post(pid: int, post: schema.Post, db: Session = Depends(get_db), curr
     post_query = db.query(models.BlogPost).filter(models.BlogPost.id == pid)
     # Save the post in a variable by using first
     post_to_update = post_query.first()
+
     # Raise 404 if post does not exist
     if post_to_update is None:
         raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
+
+    # Check if user is updating his own post
+    if post_to_update.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
+
     # Update the post using the query variable and pass the below param along with the dictionary of values to update
     post_query.update(post.dict(), synchronize_session=False)
     # Commit the changes and grab the post back from database to return it using the query we built at the start
@@ -69,6 +75,11 @@ def delete_post(pid: int, db: Session = Depends(get_db), current_user=Depends(oa
     # Raise 404 if post does not exist
     if post is None:
         raise HTTPException(detail=f"Post with ID {pid} not found", status_code=status.HTTP_404_NOT_FOUND)
+
+    # Check if user is deleting his own post
+    if post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
+
     # Delete the post using db.delete and commit the changes
     db.delete(post)
     db.commit()
