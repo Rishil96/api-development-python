@@ -16,6 +16,7 @@ class PostResponse(BaseModel):
     content: str
     published: bool
     created_at: datetime
+    owner_id: int
 
     # Create config class in Pydantic Model to ensure smooth conversion into dictionary between pydantic and sqlalchemy
     class Config:

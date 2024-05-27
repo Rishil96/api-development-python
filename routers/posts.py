@@ -21,7 +21,8 @@ def get_all_posts(db: Session = Depends(get_db), current_user=Depends(oauth2.get
 # Create a new post
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schema.PostResponse)
 def create_post(post: schema.Post, db: Session = Depends(get_db), current_user=Depends(oauth2.get_curr_user)):
-    new_post = models.BlogPost(**post.dict())           # Create a new BlogPost as per SQLAlchemy model schema
+    # Create a new BlogPost as per SQLAlchemy model schema
+    new_post = models.BlogPost(owner_id=current_user.id, **post.dict())
     db.add(new_post)                                    # Add new BlogPost to database
     db.commit()                                         # Commit the changes
     db.refresh(new_post)                    # Refresh the new post to get details added at DB end (e.g. id, created_at)

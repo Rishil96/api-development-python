@@ -9,7 +9,9 @@
 |    3    |            [Database](#3)            |
 |    4    |      [Python with Raw SQL](#4)       |
 |    5    | [Object Relational Mapper (ORM)](#5) |
-|    5    |     [Users & Authentication](#6)     |
+|    6    |     [Users & Authentication](#6)     |
+|    7    |   [Postman Advanced Features](#7)    |
+|    8    |         [Relationships](#8)          |
 
 ---
 
@@ -288,3 +290,19 @@
 - this function will return the current user that whose ID was extracted from the token header and that ID was used to get the user from the database.
 
 ---
+
+<h2 id="7">Postman Advanced Features</h2>
+
+- Just like we create environments for our code projects, it is possible to create environments for Postman.
+- An environment consists of set of variables that is valid for a specific environment and will change for different ones.
+- E.g. DEV, TEST, STAGE and PROD are environments and the resource URLs may change for each environment.
+- To adapt to this and not make changes for every environment everytime we create an environment for each scenario and create variables for the variables and activate the specific environments when we want to.
+- After creating variables, we activate the environment and use them like `{{URL}}/posts` and URL variable will be fetched from environment.
+
+---
+
+<h2 id="8">Relationships</h2>
+
+- a relationship is a connection between two or more tables.
+- using Foreign Key constraint on one column, we can create a relationship between that and another table.
+- E.g. creating a column called user id in posts table will establish which user was the author of the post.
