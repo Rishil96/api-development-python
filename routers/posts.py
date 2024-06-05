@@ -3,18 +3,21 @@ from sqlalchemy.orm import Session
 import schema
 import models
 from database import get_db
-from typing import List
+from typing import List, Optional
 import oauth2
-
 
 router = APIRouter(prefix="/posts")
 
 
 # Read all posts
 @router.get("/", response_model=List[schema.PostResponse])
-def get_all_posts(db: Session = Depends(get_db), current_user=Depends(oauth2.get_curr_user)):
+def get_all_posts(db: Session = Depends(get_db), current_user=Depends(oauth2.get_curr_user), limit: int = 5,
+                  skip: int = 0, search: Optional[str] = ""):
     print("All posts viewed by", current_user.email)
-    all_posts = db.query(models.BlogPost).all()
+    # .limit() limits the number of posts from the db.query() to the value we provide
+    # .offset() skips the number of posts from the db.query() result's start
+    # Use the .contains method on any SQLAlchemy model attribute to search for the keyword in the string (like "in")
+    all_posts = db.query(models.BlogPost).filter(models.BlogPost.title.contains(search)).limit(limit).offset(skip).all()
     return all_posts
 
 
@@ -23,9 +26,9 @@ def get_all_posts(db: Session = Depends(get_db), current_user=Depends(oauth2.get
 def create_post(post: schema.Post, db: Session = Depends(get_db), current_user=Depends(oauth2.get_curr_user)):
     # Create a new BlogPost as per SQLAlchemy model schema
     new_post = models.BlogPost(owner_id=current_user.id, **post.dict())
-    db.add(new_post)                                    # Add new BlogPost to database
-    db.commit()                                         # Commit the changes
-    db.refresh(new_post)                    # Refresh the new post to get details added at DB end (e.g. id, created_at)
+    db.add(new_post)  # Add new BlogPost to database
+    db.commit()  # Commit the changes
+    db.refresh(new_post)  # Refresh the new post to get details added at DB end (e.g. id, created_at)
     print("New Post created by", current_user.email)
     return new_post
 
@@ -85,5 +88,3 @@ def delete_post(pid: int, db: Session = Depends(get_db), current_user=Depends(oa
     db.commit()
     print(f"Post with ID {pid} deleted by {current_user.email}")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-

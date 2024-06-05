@@ -306,3 +306,13 @@
 - a relationship is a connection between two or more tables.
 - using Foreign Key constraint on one column, we can create a relationship between that and another table.
 - E.g. creating a column called user id in posts table will establish which user was the author of the post.
+- continue from 8:38:00
+
+---
+
+- it is also possible to accept query parameters from URL in FastAPI, simply pass the parameter name as parameter in router function.
+- also provide a default value to not get error when the user doesn't provide any value.
+- in our db.query use .limit(value) before .all() function to limit the number of rows we receive from query and.
+- also to skip certain rows from the result similar to limit, use .offset(value) before .all() function.
+- use .contains(key) on any attribute of SQLAlchemy Model to search for the key in that attribute string. It works like "in" keyword in Python.
+- 
