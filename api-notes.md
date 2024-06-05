@@ -315,4 +315,14 @@
 - in our db.query use .limit(value) before .all() function to limit the number of rows we receive from query and.
 - also to skip certain rows from the result similar to limit, use .offset(value) before .all() function.
 - use .contains(key) on any attribute of SQLAlchemy Model to search for the key in that attribute string. It works like "in" keyword in Python.
-- 
+- To provide a value in query parameter that has spaces use %20, e.g. URL?search=top%20beaches. %20 represents space in URL.
+
+---
+
+- **Environment Variable**: are just variables that we configure on our computer. any application running on that computer can access the environment variables that are configured.
+- To print our environment variables in CMD, use echo %ENV_VARIABLE_NAME%, the variable name should be enclosed in %.
+- While development, we can use a .env file to store all our environment variables but this should not be done in production environments.
+- Using BaseSettings of pydantic-settings library, we can set this up to automatically get the validation done.
+- Just create a class Config inside the Settings class for environment variables and inside the Config class we pass attribute env_file=".env" to use .env file for environment variables.
+
+---

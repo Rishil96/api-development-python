@@ -7,3 +7,4 @@ passlib==1.7.4
 SQLAlchemy~=2.0.30
 python-jose==3.3.0
 cryptography==42.0.7
+pydantic-settings==2.3.0
