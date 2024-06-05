@@ -10,19 +10,6 @@ class Post(BaseModel):
     published: bool = True
 
 
-# Post Response
-class PostResponse(BaseModel):
-    title: str
-    content: str
-    published: bool
-    created_at: datetime
-    owner_id: int
-
-    # Create config class in Pydantic Model to ensure smooth conversion into dictionary between pydantic and sqlalchemy
-    class Config:
-        orm_mode = True
-
-
 # Create a user
 class UserCreate(BaseModel):
     email: EmailStr
@@ -43,6 +30,20 @@ class UserResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+# Post Response
+class PostResponse(BaseModel):
+    title: str
+    content: str
+    published: bool
+    created_at: datetime
+    owner_id: int
+    owner: UserResponse         # Retrieve the user that created the post
+
+    # Create config class in Pydantic Model to ensure smooth conversion into dictionary between pydantic and sqlalchemy
+    class Config:
+        orm_mode = True
 
 
 # Token Schema
