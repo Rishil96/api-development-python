@@ -12,6 +12,7 @@
 |    6    |     [Users & Authentication](#6)     |
 |    7    |   [Postman Advanced Features](#7)    |
 |    8    |         [Relationships](#8)          |
+|    8    |       [Vote/Likes System](#9)        |
 
 ---
 
@@ -326,3 +327,5 @@
 - Just create a class Config inside the Settings class for environment variables and inside the Config class we pass attribute env_file=".env" to use .env file for environment variables.
 
 ---
+
+<h2 id="9">Vote/Likes System</h2>
